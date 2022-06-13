@@ -4,7 +4,8 @@
 
 ### 에러 이슈 1 - 에러 메시지
 
-```Failed to load module script: Expected a JavaScript module script but the server responded with a MIME type of "text/html". Strict MIME type checking is enforced for module scripts per HTML spec.
+```
+Failed to load module script: Expected a JavaScript module script but the server responded with a MIME type of "text/html". Strict MIME type checking is enforced for module scripts per HTML spec.
 
 ```
 
@@ -37,7 +38,8 @@
 
 ### 에러 이슈 2 - 에러 이슈 메시지
 
-```Uncaught (in promise) TypeError: Cannot read properties of undefined (reading 'slice')
+```
+Uncaught (in promise) TypeError: Cannot read properties of undefined (reading 'slice')
 
 ```
 

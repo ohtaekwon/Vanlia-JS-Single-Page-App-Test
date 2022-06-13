@@ -1,4 +1,5 @@
 import Dashboard from "./views/Dashboard.js";
+import NotFound from "./views/NotFound.js";
 import Posts from "./views/Post.js";
 import PostView from "./views/PostView.js";
 import Settings from "./views/Settings.js";
@@ -54,11 +55,13 @@ const router = async () => {
       route: routes[0],
       result: [location.pathname],
     };
+    const page = new NotFound();
+    document.querySelector("#app").innerHTML = await page.getHtml();
+  } else {
+    const view = new match.route.view(getParams(match));
+    document.querySelector("#app").innerHTML = await view.getHtml();
+    // console.log(match.route.view);
   }
-
-  const view = new match.route.view(getParams(match));
-  document.querySelector("#app").innerHTML = await view.getHtml();
-  // console.log(match.route.view);
 };
 
 window.addEventListener("popstate", router);
