@@ -3,8 +3,8 @@ import AbstractView from "./AbstractView.js";
 const pageName = "Settings Page";
 
 export default class extends AbstractView {
-  constructor() {
-    super();
+  constructor(params) {
+    super(params);
     this.setTitle(pageName.toUpperCase());
   }
   async getHtml() {

@@ -1,15 +1,15 @@
 import AbstractView from "./AbstractView.js";
 
-const pageName = "Post Page";
+// const pageName = "Post Page";
 
 export default class extends AbstractView {
-  constructor() {
-    super();
+  constructor(params) {
+    super(params);
     this.setTitle("Post");
   }
   async getHtml() {
     return `
-      <h1>${pageName.toUpperCase()}</h1>
+      <h1>Post Page</h1>
       <p>
         안녕하세요 여기는 Post페이지 입니다.
       </p>

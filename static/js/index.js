@@ -1,22 +1,30 @@
 import Dashboard from "./views/Dashboard.js";
-import Post from "./views/Post.js";
+import Posts from "./views/Post.js";
+import PostView from "./views/PostView.js";
 import Settings from "./views/Settings.js";
 
 const pathToRegex = (path) =>
   new RegExp("^" + path.replace(/\//g, "\\/").replace(/:\w+/g, "(.+)") + "$");
 
 const getParams = (match) => {
+  console.log("match", match);
   // ["/posts/2", "2"]; 에서 id값에 해당하는 두 번째 값을 가져옴
-  const values = match.result.slice(1);
+  const values = match.result?.slice(1);
+  // 뒤에 쿼리파라미터 등이 붙어도 인지할 수 있게 작성
   const keys = Array.from(match.route.path.matchAll(/:(\w+)/g)).map(
     (result) => result[1]
   );
-  console.log("keys", Array.from(match.route.path.matchAll(/:(\w+)/g)));
-  return {};
+  console.log("keys", keys);
+  return Object.fromEntries(
+    keys.map((key, i) => {
+      console.log("key", key);
+      return [key, values[i]];
+    })
+  );
 };
 
 const navigateTo = (url) => {
-  history.pushState({}, null, url);
+  history.pushState(null, null, url);
   router();
 };
 
@@ -25,8 +33,8 @@ const router = async () => {
   // posts/:id
   const routes = [
     { path: "/", view: Dashboard },
-    { path: "/posts", view: Post },
-    { path: "/posts/:id", view: Post },
+    { path: "/posts", view: Posts },
+    { path: "/posts/:id", view: PostView },
     { path: "/settings", view: Settings },
   ];
   // Test each route for potential match
@@ -44,7 +52,7 @@ const router = async () => {
   if (!match) {
     match = {
       route: routes[0],
-      isMatch: true,
+      result: [location.pathname],
     };
   }
 
