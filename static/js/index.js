@@ -1,25 +1,46 @@
 import Dashboard from "./views/Dashboard.js";
 import Post from "./views/Post.js";
+import Settings from "./views/Settings.js";
+
+const pathToRegex = (path) =>
+  new RegExp("^" + path.replace(/\//g, "\\/").replace(/:\w+/g, "(.+)") + "$");
+
+const getParams = (match) => {
+  // ["/posts/2", "2"]; 에서 id값에 해당하는 두 번째 값을 가져옴
+  const values = match.result.slice(1);
+  const keys = Array.from(match.route.path.matchAll(/:(\w+)/g)).map(
+    (result) => result[1]
+  );
+  console.log("keys", Array.from(match.route.path.matchAll(/:(\w+)/g)));
+  return {};
+};
+
 const navigateTo = (url) => {
   history.pushState({}, null, url);
   router();
 };
 
 const router = async () => {
+  // console.log(pathToRegex("/posts/:id")); // /^\/posts\/(.+)$/
+  // posts/:id
   const routes = [
     { path: "/", view: Dashboard },
     { path: "/posts", view: Post },
-    { path: "/settings", view: () => console.log("settings page") },
+    { path: "/posts/:id", view: Post },
+    { path: "/settings", view: Settings },
   ];
   // Test each route for potential match
   const potentialMatches = routes.map((route) => {
     return {
       route: route,
-      isMatch: location.pathname === route.path,
+      result: location.pathname.match(pathToRegex(route.path)),
     };
   });
-  let match = potentialMatches.find((potentialMatch) => potentialMatch.isMatch);
-
+  let match = potentialMatches.find(
+    (potentialMatch) => potentialMatch.result !== null
+  );
+  // "/posts/2".match(/^\/1posts\/(.+)$/) ==> null
+  console.log("/posts/:id".match(/^\/posts\/(.+)$/));
   if (!match) {
     match = {
       route: routes[0],
@@ -27,9 +48,9 @@ const router = async () => {
     };
   }
 
-  const view = new match.route.view();
+  const view = new match.route.view(getParams(match));
   document.querySelector("#app").innerHTML = await view.getHtml();
-  console.log(match.route.view);
+  // console.log(match.route.view);
 };
 
 window.addEventListener("popstate", router);
