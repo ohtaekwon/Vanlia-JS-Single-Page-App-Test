@@ -106,6 +106,97 @@ app.listen(process.env.PORT || 5000, () => console.log("Server running....."));
 node server.js
 ```
 
+## 3. Router 구현하기
+
+### 3-1. router 함수 구현
+
+frontend 폴더 안에 static 폴더를 만들고 그 안에 다시 js 폴더를 만들고 !! js 폴더 안에 index.js 파일을 만들어주자.
+
+이제 Home, Posts, Settings 페이지로 왔다갔다 할 수 있게끔 라우터를 구현해보자.
+
+```js
+// frontend/static/js/index.js
+const router = async () => {
+    const routes = [
+        { path: "/", view: () => console.log("Viewing Home") },
+        { path: "/posts", view: () => console.log("Viewing Posts") },
+        { path: "/settings", view: () => console.log("Viewing Settings") },
+    ];
+// ...
+```
+
+- view 는 해당 경로에서 나타내는 html을 의미하는데 우선 작동이 잘 되는지 확인하기 위해서 콘솔로 먼저 확인한다.
+
+```js
+// ...
+const pageMatches = routes.map((route) => {
+  return {
+    route, // route: route
+    isMatch: route.path === location.pathname,
+  };
+});
+// ...
+```
+
+- map 을 이용해서 routes 를 pageMatches 에 담고 출력해보면 아래와 같이 나온다.
+
+```js
+// Home 페이지 일 때
+(3) [{…}, {…}, {…}]
+0:
+  isMatch: true
+  route: {path: "/", view: ƒ} // view: () => console.log("Viewing Home")
+1:
+  isMatch: false
+  route: {path: "/posts", view: ƒ} // view: () => console.log("Viewing Posts")
+2:
+  isMatch: false
+  route: {path: "/settings", view: ƒ} // view: () => console.log("Viewing Settings")
+// ...
+```
+
+다음은 isMatch가 true 일 때 path 값과 location.pathname 의 값이 같다면 해당 페이지를 보여주면 된다.(우선은 console.log)
+
+find 메소드를 사용해서 구현한다.
+
+Array.prototype.find() find() 메서드는 주어진 판별 함수를 만족하는 첫 번째 요소의 값을 반환합니다. 그런 요소가 없다면 undefined를 반환합니다. -MDN-
+
+```js
+// ...
+let match = pageMatches.find((pageMatch) => pageMatch.isMatch);
+
+console.log(match.route.view());
+```
+
+이렇게 만들면 pageMatch.isMatch 인 값, 즉 true 인 값의 view 함수를 실행한 Viewing ... 을 보여주게 될 것이다.
+
+### 3-2. 이벤트 구현하기
+
+다음에 해야 할 일은 페이지가 처음 로드됐을 때, 각각의 페이지들을 클릭할 때 router 함수를 실행시켜 해당되는 페이지에 대한 정보를 띄워주는 것이다.
+
+HTML 이 모두 로드됐을 때 첫 페이지를 보여주기 위해서 DOMContentLoaded 를 사용할 것이다.
+
+```js
+document.addEventListener("DOMContentLoaded", () => {
+  document.body.addEventListener("click", (e) => {
+    if (e.target.matches("[data-link]")) {
+      e.preventDefault();
+      history.pushState(null, null, e.target.href);
+      router();
+    }
+  });
+  router();
+});
+```
+
+click 이벤트를 등록하고 data-link라는 속성(a 태그)이 있는 곳에서만 동작하도록 조건을 달아준다.
+
+history.pushState 를 사용해서 url을 변경할 수 있게 만들어준다. 그리고 router 함수를 실행시켜 렌더링을 해주면된다.
+
+여기까지 작성하고 실행해보면 다음과 같이 작동할 것이다.
+
+<br/>
+
 ## 에러 이슈
 
 ### 에러 이슈 1
